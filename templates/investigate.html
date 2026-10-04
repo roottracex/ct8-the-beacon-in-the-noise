@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ alert.id }} | Cybertec8 SOC</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at 80% 10%, rgba(0, 229, 255, 0.08), transparent 28%),
+                radial-gradient(circle at 10% 90%, rgba(0, 120, 255, 0.06), transparent 30%),
+                #060a0f;
+            color: #e6edf3;
+            font-family: "Segoe UI", Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+            background-size: 45px 45px;
+        }
+
+        .header {
+            height: 72px;
+            background: rgba(8, 13, 19, 0.94);
+            border-bottom: 1px solid #1d2935;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 42px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-mark {
+            width: 34px;
+            height: 34px;
+            border: 1px solid #00e5ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00e5ff;
+            font-weight: 800;
+            box-shadow: 0 0 18px rgba(0,229,255,0.18);
+        }
+
+        .brand-name {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+
+        .brand-sub {
+            color: #667483;
+            font-size: 11px;
+            letter-spacing: 1.8px;
+            margin-left: 8px;
+        }
+
+        .live {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #7ee787;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            background: #7ee787;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(126,231,135,0.8);
+        }
+
+        .container {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 42px 25px 70px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back {
+            color: #718092;
+            text-decoration: none;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 25px;
+            transition: 0.2s;
+        }
+
+        .back:hover {
+            color: #00e5ff;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .eyebrow {
+            color: #00e5ff;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 31px;
+            font-weight: 650;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: #718092;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        .severity {
+            border: 1px solid rgba(255, 92, 92, 0.45);
+            background: rgba(255, 92, 92, 0.08);
+            color: #ff7777;
+            padding: 9px 15px;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+        }
+
+        .panel {
+            background: rgba(10, 16, 23, 0.92);
+            border: 1px solid #1d2935;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow:
+                0 20px 60px rgba(0,0,0,0.35),
+                0 0 35px rgba(0,229,255,0.025);
+        }
+
+        .panel-header {
+            padding: 18px 25px;
+            border-bottom: 1px solid #1d2935;
+            background: rgba(255,255,255,0.015);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-label {
+            font-size: 11px;
+            color: #718092;
+            letter-spacing: 1.8px;
+            font-weight: 700;
+        }
+
+        .incident-id {
+            color: #00e5ff;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .item {
+            background: #0c131b;
+            border: 1px solid #1b2733;
+            border-radius: 9px;
+            padding: 19px;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .item:hover {
+            border-color: #294150;
+            transform: translateY(-1px);
+        }
+
+        .label {
+            color: #667483;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 9px;
+        }
+
+        .value {
+            color: #e6edf3;
+            font-size: 15px;
+            font-family: "Consolas", monospace;
+        }
+
+        .value.high {
+            color: #ff7777;
+            font-weight: 700;
+        }
+
+        .value.status {
+            color: #f5c451;
+        }
+
+        .observation {
+            margin-top: 22px;
+            border: 1px solid #1d2935;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .observation-head {
+            padding: 15px 18px;
+            background: #0d151e;
+            border-bottom: 1px solid #1d2935;
+            color: #d7e1ea;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .observation-body {
+            padding: 21px;
+            background: #0a1118;
+        }
+
+        .observation-body p {
+            color: #9aa8b6;
+            line-height: 1.75;
+            font-size: 14px;
+        }
+
+        .observation-body p + p {
+            margin-top: 13px;
+        }
+
+        .note {
+            margin-top: 18px;
+            padding: 18px 20px;
+            background: linear-gradient(
+                90deg,
+                rgba(0,229,255,0.055),
+                rgba(0,229,255,0.015)
+            );
+            border-left: 3px solid #00e5ff;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .note-title {
+            color: #00e5ff;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            margin-bottom: 8px;
+        }
+
+        .note p {
+            color: #8998a7;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .footer-status {
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid #1d2935;
+            display: flex;
+            justify-content: space-between;
+            color: #596878;
+            font-size: 11px;
+            letter-spacing: 0.8px;
+        }
+
+        .active {
+            color: #f5c451;
+        }
+
+        @media (max-width: 700px) {
+            .header {
+                padding: 0 20px;
+            }
+
+            .brand-sub {
+                display: none;
+            }
+
+            .live {
+                display: none;
+            }
+
+            .topbar {
+                gap: 18px;
+                flex-direction: column;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .title {
+                font-size: 25px;
+            }
+
+            .container {
+                padding: 30px 16px 50px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="brand">
+        <div class="brand-mark">C8</div>
+
+        <div>
+            <span class="brand-name">CYBERTEC8</span>
+            <span class="brand-sub">SECURITY OPERATIONS CENTER</span>
+        </div>
+    </div>
+
+    <div class="live">
+        <span class="live-dot"></span>
+        SOC SYSTEMS ONLINE
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <a href="/" class="back">
+        ← Back to SOC Dashboard
+    </a>
+
+
+    <div class="topbar">
+
+        <div>
+            <div class="eyebrow">ACTIVE SECURITY INCIDENT</div>
+
+            <h1 class="title">
+                {{ alert.title }}
+            </h1>
+
+            <p class="subtitle">
+                Security Alert Investigation
+            </p>
+        </div>
+
+        <div class="severity">
+            {{ alert.severity }}
+        </div>
+
+    </div>
+
+
+    <section class="panel">
+
+        <div class="panel-header">
+
+            <div class="panel-label">
+                INCIDENT DETAILS
+            </div>
+
+            <div class="incident-id">
+                {{ alert.id }}
+            </div>
+
+        </div>
+
+
+        <div class="content">
+
+            <div class="grid">
+
+                <div class="item">
+                    <div class="label">Source Endpoint</div>
+                    <div class="value">
+                        {{ alert.source }}
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="label">Destination</div>
+                    <div class="value">
+                        {{ alert.destination }}
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="label">Incident Status</div>
+                    <div class="value status">
+                        {{ alert.status }}
+                    </div>
+                </div>
+
+                <div class="item">
+                    <div class="label">Investigation Reference</div>
+                    <div class="value">
+                        {{ alert.reference }}
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="observation">
+
+                <div class="observation-head">
+                    ANALYST OBSERVATION
+                </div>
+
+                <div class="observation-body">
+
+                    <p>
+                        {{ alert.description }}
+                    </p>
+
+                    <p>
+                        {{ alert.next_step }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="note">
+
+                <div class="note-title">
+                    ANALYST NOTE
+                </div>
+
+                <p>
+                    No additional investigation controls are exposed
+                    in this interface.
+                </p>
+
+                <p>
+                    Investigators should inspect the application resources
+                    associated with this alert.
+                </p>
+
+            </div>
+
+
+            <div class="footer-status">
+
+                <span>
+                    INCIDENT ID: {{ alert.id }}
+                </span>
+
+                <span class="active">
+                    ● INVESTIGATION ACTIVE
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<script src="/static/js/soc.js"></script>
+
+</body>
+</html>
